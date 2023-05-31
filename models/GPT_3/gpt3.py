@@ -10,11 +10,12 @@ import tiktoken
 from transformers import GPT2Tokenizer
 class GPTInference():
     def __init__(self):
-        openai.api_key = "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"
+        openai.api_key = "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"
         self.tokenizer = tiktoken.encoding_for_model("gpt-3.5-turbo")
 
     @retry(wait=wait_random_exponential(min=1, max=60), stop=stop_after_attempt(6))
     def get_chatgpt_response(self, prompt):
+        # print(openai.api_key)
         response = openai.ChatCompletion.create(model="gpt-3.5-turbo-0301",
                                        messages=[
                         {"role": "user", "content": prompt},

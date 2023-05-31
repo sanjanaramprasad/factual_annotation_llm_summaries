@@ -24,7 +24,7 @@ def check_prompt_token_limits(article, instructions, tokenizer, token_limit):
 
 def get_shortlisted_data(articles, reference_summaries, ids = [], token_limit = 4096, dataset = 'news'):
     
-    flan_tokenizer = T5Tokenizer.from_pretrained("google/flan-t5-xl")
+    flan_tokenizer = T5Tokenizer.from_pretrained("google/flan-t5-xxl")
     flan_instructions = config.instructions[f'{dataset}_flant5']
     
     gpt_tokenizer = tiktoken.encoding_for_model("gpt-3.5-turbo")
@@ -100,15 +100,15 @@ def make_sample_news(data_path, token_limit = 4096):
 
 
 def make_sample_pubmed(data_path, token_limit = 4096):
-    dataset = load_dataset("ccdv/pubmed-summarization", split="test", cache_dir = '/scratch/ramprasad.sa/huggingface_datasets')
-    articles = dataset['article']
+    dataset = load_dataset("Blaise-g/SumPubmed", split="test", cache_dir = '/scratch/ramprasad.sa/huggingface_datasets')
+    articles = dataset['text']
     reference_summaries = dataset['abstract']
     
     
     
     shortlisted_data = {'article': [], 'reference_summary': [], 'id': [], 'origin': []}
     
-    shortlisted_articles, shortlisted_reference_summaries, shortlisted_ids = get_shortlisted_data(articles, reference_summaries, dataset = 'pubmed')
+    shortlisted_articles, shortlisted_reference_summaries, shortlisted_ids = get_shortlisted_data(articles, reference_summaries, token_limit = token_limit, dataset = 'pubmed')
     shortlisted_data['article'] += shortlisted_articles
     shortlisted_data['reference_summary'] += shortlisted_reference_summaries
     shortlisted_data['id'] += shortlisted_ids
@@ -132,7 +132,7 @@ def make_sample_chemsum(data_path, token_limit = 4096):
     
     shortlisted_data = {'article': [], 'reference_summary': [], 'id': [], 'origin': []}
     
-    shortlisted_articles, shortlisted_reference_summaries, shortlisted_ids = get_shortlisted_data(articles, reference_summaries, ids )
+    shortlisted_articles, shortlisted_reference_summaries, shortlisted_ids = get_shortlisted_data(articles, reference_summaries, ids, token_limit = token_limit )
     shortlisted_data['article'] += shortlisted_articles
     shortlisted_data['reference_summary'] += shortlisted_reference_summaries
     shortlisted_data['id'] += shortlisted_ids
@@ -158,7 +158,7 @@ def make_sample_scitldr(data_path, token_limit = 4096):
     
     shortlisted_data = {'article': [], 'reference_summary': [], 'id': [], 'origin': []}
     
-    shortlisted_articles, shortlisted_reference_summaries, shortlisted_ids = get_shortlisted_data(articles, reference_summaries, ids, dataset = 'scitldr' )
+    shortlisted_articles, shortlisted_reference_summaries, shortlisted_ids = get_shortlisted_data(articles, reference_summaries, ids, token_limit = token_limit, dataset = 'scitldr' )
     shortlisted_data['article'] += shortlisted_articles
     shortlisted_data['reference_summary'] += shortlisted_reference_summaries
     shortlisted_data['id'] += shortlisted_ids
@@ -181,7 +181,7 @@ def make_sample_billsum(data_path, token_limit = 4096):
     
     shortlisted_data = {'article': [], 'reference_summary': [], 'id': [], 'origin': []}
     
-    shortlisted_articles, shortlisted_reference_summaries, shortlisted_ids = get_shortlisted_data(articles, reference_summaries, dataset = 'billsum')
+    shortlisted_articles, shortlisted_reference_summaries, shortlisted_ids = get_shortlisted_data(articles, reference_summaries, token_limit = token_limit, dataset = 'billsum')
     shortlisted_data['article'] += shortlisted_articles
     shortlisted_data['reference_summary'] += shortlisted_reference_summaries
     shortlisted_data['id'] += shortlisted_ids

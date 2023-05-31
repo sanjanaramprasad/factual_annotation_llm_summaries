@@ -1,18 +1,20 @@
 from transformers import T5Tokenizer, T5ForConditionalGeneration
-
+import torch
 
 device = 'cuda'
 class FlanT5Inference:
     
     def __init__(self):
+        
         self.model = T5ForConditionalGeneration.from_pretrained("google/flan-t5-xl", cache_dir="/scratch/ramprasad.sa/huggingface_models")
         self.tokenizer = T5Tokenizer.from_pretrained("google/flan-t5-xl", cache_dir="/scratch/ramprasad.sa/huggingface_models")
         self.model.to(device)
 #         self.tokenizer.to('cuda')
 
     def get_response(self, prompt):
-        input_ids = self.tokenizer(prompt, return_tensors="pt").input_ids.to(device)
-        response = self.model.generate(input_ids, max_length = 1024)
+        with torch.no_grad():
+            input_ids = self.tokenizer(prompt, return_tensors="pt").input_ids.to(device)
+            response = self.model.generate(input_ids, max_length = 1024)
         return self.tokenizer.decode(response[0], skip_special_tokens = True)
 
     

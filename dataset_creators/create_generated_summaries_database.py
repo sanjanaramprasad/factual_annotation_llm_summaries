@@ -23,7 +23,7 @@ def make_sample(data_path, filter_keys = []):
 
 def generate_summaries(df, model, num_samples = 5, instruction_type = 'all'):
     
-    model_class = model_map[model]
+    model_class = model_map[model]()
     instructions = config.instructions
     
     summaries = {}
@@ -33,7 +33,11 @@ def generate_summaries(df, model, num_samples = 5, instruction_type = 'all'):
         instruction = instructions[f'{task}_{model}']
         for instr_key, instr in instruction.items():
             if instruction_type == 'all' or instruction_type == instr_key:
-                summary = model_class().get_news_response(article, instr)
+                # try:
+                summary = model_class.get_news_response(article, instr)
+                # except Exception as e:
+                # print('Error', e)
+                # summary = 'Error'
                 if instr_key not in summaries:
                     summaries[instr_key] = []
                 summaries[instr_key].append(summary)
@@ -71,8 +75,8 @@ if __name__=="__main__":
     force_new_database = True if force_new_database == 'True' else False
     
 #     df_path = f'{data_path}/{model}_test_sample.csv' 
-    df_path_gen_sample = f'{data_path}/{task}_generation_sample.csv'
-    df_path_gen_sample_model_output = f'{data_path}/{model}_{task}_generation_sample.csv'
+    df_path_gen_sample = f'{data_path}/{task}_{num_samples}_generation_sample.csv'
+    df_path_gen_sample_model_output = f'{data_path}/{model}_{task}_{num_samples}_generation_sample.csv'
     
     if (os.path.exists(df_path_gen_sample) != True) or (force_new_database == True):
         if task == 'news':
@@ -91,6 +95,9 @@ if __name__=="__main__":
 #     print(os.path.exists(df_path_gen_sample_model_output), df_path_gen_sample_model_output)   
     if (os.path.exists(df_path_gen_sample_model_output) != True or (force_new_database)):
                 df = generate_summaries(df, model, num_samples = num_samples, instruction_type= instruction_type)
+                print(len(df))
+                df = df[df[instruction_type] != 'Error']
+                print(len(df))
                 df.to_csv(df_path_gen_sample_model_output)
     
 
